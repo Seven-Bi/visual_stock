@@ -183,14 +183,14 @@ def get_ranged_data(request):
 					# start calculating the max profits and its date range
 					max_index = -1
 					min_index = -1
-					i = 0
-					j = 0
 					for i in range(len(data_list)):
-						for j in range(len(data_list) - 1):
-							if data_list[j].value - data_list[i].value >= max_profit and j > i:
-								max_profit = data_list[j].value - data_list[i].value 
-								max_index = j
-								min_index = i
+					    j = i + 1
+					    while(j < len(data_list)):
+					        if data_list[j].value - data_list[i].value >= max_profit:
+					            max_profit = data_list[j].value - data_list[i].value
+					            max_index = j
+					            min_index = i
+					        j = j + 1
 
 					# find the date range by giving min index and max index
 					max_profit_period = (data_list[min_index].date, data_list[max_index].date)
