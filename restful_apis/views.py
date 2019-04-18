@@ -138,6 +138,46 @@ def goover_all_pages(identifier, page_key, data_list, start_date, end_date):
 		raise
 
 
+
+# algorithm for quickly find the max profit in giving data set
+def calculate_max(data_list):
+
+	min_value = -1
+	max_value = -1
+
+	max_index = -1
+	min_index = -1
+
+	left = 0
+	right = len(data_list) - 1
+
+	while(left < right):
+		if min_value == -1:
+			min_value = data_list[left].value
+			min_index = left
+		elif data_list[left].value < min_value:
+			if left < max_index:
+				min_value = data_list[left].value
+		if  data_list[left].value > max_value:
+			if left > min_index:
+				max_value = data_list[left].value
+
+		left = left + 1	
+
+		if min_value == -1:
+			min_value = data_list[right].value
+		elif data_list[right].value < min_value:
+			if right < max_index:
+				min_value = data_list[right].value
+		if  data_list[right].value > max_value:
+			if right > min_index:
+				max_value = data_list[right].value
+
+		right = right - 1	
+
+	return max_value - min_value, max_index, min_index				
+
+
 #################################################################################################
 # API expose to outside, that allow people get the company stock data by giving stock code and 
 # range dates.
@@ -181,18 +221,12 @@ def get_ranged_data(request):
 						output_data.append((item.date, item.value))
 
 					# start calculating the max profits and its date range
+
+
 					max_index = -1
 					min_index = -1
-					for i in range(len(data_list)):
-					    j = i + 1
-					    while(j < len(data_list)):
-					        if data_list[j].value - data_list[i].value >= max_profit:
-					            max_profit = data_list[j].value - data_list[i].value
-					            max_index = j
-					            min_index = i
-					        j = j + 1
+					max_profit, max_index, min_index = calculate_max(data_list)
 
-					# find the date range by giving min index and max index
 					max_profit_period = (data_list[min_index].date, data_list[max_index].date)
 
 				except ApiException as e:
