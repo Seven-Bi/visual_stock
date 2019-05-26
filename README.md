@@ -1,17 +1,8 @@
-### Read Me
-For now this version still has some issues:
-  - Large time comsuming on data save
-  - No color change to max profit line chart
+### Hey
+This is a version 1.0 demo of web app for showing the stock price in the latest finanace market:
+  - You could get a max profits within a range date
+  - You could see the latest common stock price (for now only 10 stock code you can check)
   
-I will keep update this, try fixing the issues.
 
 
-### how to run:
-Run local server then you could open the Index page, there will demmo
-the functionalities.
-
-- Click button will save stock data into DB
-- Copy-paste the link will demo the api function, then will return the required json data
-- The line chart will save as an image under project folder 'restful_apis'
-
-
+By the way here is a little ad that if you think I could help with anything, contact me via email: steven.bb.0221@gmail.com

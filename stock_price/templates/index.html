@@ -1,0 +1,184 @@
+<!doctype html>
+{% load static %}
+
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="{% static 'js/ajax.js' %}"></script>
+
+    <style type="text/css">
+      div{margin:0px; border:0px; padding:5px;}           
+    </style> 
+
+    <title> Demo Page </title>
+  </head>
+  <body>
+  	<div class="container">
+  		<h1><span class="badge badge-secondary">Visual Stock Page</span></h1>
+      <div class="jumbotron">
+        <div class="col">
+          <div class="row">
+            <div class="col">
+              <h3 class="display-4">Max Profits</h3>
+            </div>
+            <div class="col">
+              <p class="lead">Here allow users to check the max profits from a range date by pointing the start date and end date.</p>
+            </div>
+          </div>
+          <hr class="my-4">   
+          <div class="row">
+            <div class="col">
+              <div class="col-md-4 mb-3">
+                <label for="country">Stock Code</label>
+                <select class="custom-select d-block w-100" name="stock_code" id="stock_code_opts" required>
+                  <option value="">Stock Code</option>
+                  {% for code in stock_codes %}
+                  <option>{{ code }}</option>
+                  {% endfor %}
+                </select>
+              </div> 
+              <div class="col-md-5 mb-3">
+                <label for="country">Start Date</label>
+                <input id="start_date" type="date" class="form-control" name="start_date" required>
+              </div>
+              <div class="col-md-5 mb-3">
+                <label for="country">End Date</label>
+                <input id="end_date" type="date" class="form-control" name="end_date" required>
+              </div>  
+              <div class="col-md-5 mb-3">
+                <input type="button" class="btn btn-primary" id="max_profits" value="Send Request >">
+              </div>
+            </div>
+            <div class="col">
+              <img id="max_profits_chart" src="{% static 'img/test.jpg' %}" class="img-fluid" alt="Responsive image">
+            </div>
+          </div>                    
+        </div>
+      </div> 
+      <div class="jumbotron">
+        <div class="row">
+            <div class="col">
+              <h3 class="display-4">Latest Data</h3>
+            </div>
+            <div class="col">
+              <p class="lead">Here allows users to see the latest of common stock price (The stock code could be more when new version release).</p>
+            </div>       
+        </div>
+        <hr class="my-4">
+        <div class="row">       
+          <div class="col">
+            <div class="dropdown mr-1">
+              <input type="button" class="btn btn-primary" id="latest_data" value="Latest Data">
+            </div>             
+          </div>
+          <div class="col">
+            <img id="data_chart" src="{% static 'img/test.jpg' %}" class="img-fluid" alt="Responsive image"> 
+          </div>              
+        </div>     	
+      </div>  
+      <div class="jumbotron">
+        <div class="row">
+            <div class="col">
+              <h3 class="display-4">Save to DB</h3>
+            </div>
+            <div class="col">
+              <p class="lead">Please wait for more or less 1 min to backup the data.</p>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row">       
+          <div class="col">
+            <div class="dropdown mr-1">
+              <input type="button" class="btn btn-primary" id="save_data" value="Backup Data">
+            </div>             
+          </div>
+          <div class="col">
+            <img src="{% static 'img/test.jpg' %}" class="img-fluid" alt="Responsive image"> 
+          </div>              
+        </div>      
+      </div>           
+  	</div>
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+      $( "#max_profits" ).click(function(event) {
+        code = $('#stock_code_opts').val()
+        start_date =$('#start_date').val()
+        end_date = $('#end_date').val()
+        event.preventDefault();
+        $("#max_profits").prop('value', 'Downloading  ...');
+        $("#max_profits").prop("disabled", true);
+        $.ajax({
+            type: 'POST',
+            url: 'visual_stock/get_max_profits',
+            data: {'code': code, 'start_date': start_date, 'end_date': end_date, 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            success: function (data, textStatus) {
+              $("#max_profits").prop('value', 'Send Request >');
+              $("#max_profits").prop("disabled", false);
+              $("#max_profits_chart").prop('src','data:image/png;base64,' + data);
+            },
+            error: function(xhr, status, e) {
+              $("#max_profits").prop('value', 'Send Request >');
+              $("#max_profits").prop("disabled", false);             
+              alert('Failed to download');
+            }
+        });
+      }); 
+
+      $( "#latest_data" ).click(function(event) {
+        event.preventDefault();
+        $("#latest_data").prop('value', 'Downloading  ...');
+        $("#latest_data").prop("disabled", true);
+        $.ajax({
+            type: 'POST',
+            url: 'visual_stock/get_latest_data',
+            data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            success: function (data, textStatus) {
+              $("#latest_data").prop('value', 'Latest Data');
+              $("#latest_data").prop("disabled", false);
+              $("#data_chart").prop('src','data:image/png;base64,' + data);
+            },
+            error: function(xhr, status, e) {
+              $("#latest_data").prop('value', 'Latest Data');
+              $("#latest_data").prop("disabled", false);              
+              alert('Failed to download');
+            }
+        });
+      }); 
+
+      $( "#save_data" ).click(function(event) {
+        event.preventDefault();
+        $("#save_data").prop('value', 'Backup   ...');
+        $("#save_data").prop("disabled", true);
+        $.ajax({
+            type: 'POST',
+            url: 'visual_stock/save_profits',
+            data: {'csrfmiddlewaretoken': '{{ csrf_token }}'},
+            success: function (data, textStatus) {
+              $("#save_data").prop('value', 'Backup Data');
+              $("#save_data").prop("disabled", false);
+              alert('Backup Finish');
+            },
+            error: function(xhr, status, e) {
+              $("#save_data").prop('value', 'Backup Data');
+              $("#save_data").prop("disabled", false);              
+              alert('Failed to backup');
+            }
+        });
+      });          
+    </script>          
+    </script>
+  </body>
+</html>

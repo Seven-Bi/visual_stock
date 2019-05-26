@@ -1,0 +1,7 @@
+{
+	"api_key": "OjA1NDJkZjZlMmRhYWM4ZjRiNjg5NGE5NDZjNDkzNzIx",
+	"default_identifiers": ["AXP", "AAPL", "BA", "CAT", "CSCO", "CVX", "XOM", "GS", "HD", "IBM"],
+	"tag": "close_price",
+	"default_date": "2015-01-01",
+	"order": "asc"
+}
