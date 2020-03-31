@@ -15,7 +15,7 @@ from stock_price.imgloader import draw_line_chart, make_bar_chart
 
 
 tag = ''
-default_start_date = ''
+start_date = ''
 order = ''
 identifier_group = []
 intrinio_sdk.ApiClient().configuration.api_key['api_key'] = ''
@@ -26,7 +26,7 @@ with open(os.path.abspath(filename), 'r') as f:
 	intrinio_sdk.ApiClient().configuration.api_key['api_key'] = datastore["api_key"]
 	identifier_group = datastore["default_identifiers"]
 	tag = datastore["tag"]
-	default_start_date = datastore["default_date"]
+	start_date = datastore["default_date"]
 	order = datastore["order"]
 
 historical_data_api = intrinio_sdk.HistoricalDataApi()
