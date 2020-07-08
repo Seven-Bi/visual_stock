@@ -10,7 +10,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <script src="{% static 'js/ajax.js' %}"></script>
+    <!-- <script src="{% static 'js/ajax.js' %}"></script> -->
 
     <style type="text/css">
       div{margin:0px; border:0px; padding:5px;}           
@@ -28,7 +28,7 @@
               <h3 class="display-4">Max Profits</h3>
             </div>
             <div class="col">
-              <p class="lead">Here allow users to check the max profits from a range date by pointing the start date and end date.</p>
+              <p class="lead">Allow users to check the max profits from a range date by pointing the start date and end date.</p>
             </div>
           </div>
           <hr class="my-4">   
@@ -67,7 +67,7 @@
               <h3 class="display-4">Latest Data</h3>
             </div>
             <div class="col">
-              <p class="lead">Here allows users to see the latest of common stock price (The stock code could be more when new version release).</p>
+              <p class="lead">Allows users to see the latest of common stock price.</p>
             </div>       
         </div>
         <hr class="my-4">
@@ -102,7 +102,30 @@
             <img src="{% static 'img/test.jpg' %}" class="img-fluid" alt="Responsive image"> 
           </div>              
         </div>      
-      </div>           
+      </div>
+      <div class="jumbotron">
+        <div class="row">
+            <div class="col">
+              <h3 class="display-4">Download PDF</h3>
+            </div>
+            <div class="col">
+              <p class="lead">Allow users download stock data as PDF file</p>
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="row">       
+          <div class="col">
+            <div class="dropdown mr-1">
+              <a href="visual_stock/download">
+                <input type="button" class="btn btn-primary" id="download_pdf" value="Download">
+              </a>
+            </div>             
+          </div>
+          <div class="col">
+            <img src="{% static 'img/test.jpg' %}" class="img-fluid" alt="Responsive image"> 
+          </div>              
+        </div>      
+      </div>        
   	</div>
 
 
@@ -169,7 +192,7 @@
             success: function (data, textStatus) {
               $("#save_data").prop('value', 'Backup Data');
               $("#save_data").prop("disabled", false);
-              alert('Backup Finish');
+              alert('Done!');
             },
             error: function(xhr, status, e) {
               $("#save_data").prop('value', 'Backup Data');

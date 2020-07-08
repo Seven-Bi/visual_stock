@@ -3,6 +3,7 @@ import re
 import logging
 import json
 import os
+import io
 from datetime import datetime, timedelta
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -10,6 +11,10 @@ from intrinio_sdk.rest import ApiException
 from dateutil.parser import parse
 from stock_price.models import Stock
 from stock_price.imgloader import draw_line_chart, make_bar_chart
+
+from django.http import FileResponse
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 
 
 
@@ -20,6 +25,9 @@ order = ''
 identifier_group = []
 intrinio_sdk.ApiClient().configuration.api_key['api_key'] = ''
 filename = 'stock_price/initiation.json'
+historical_data_api = None
+company_api = None
+
 
 with open(os.path.abspath(filename), 'r') as f:
 	datastore = json.load(f)
@@ -29,10 +37,10 @@ with open(os.path.abspath(filename), 'r') as f:
 	start_date = datastore["default_date"]
 	order = datastore["order"]
 
+
 historical_data_api = intrinio_sdk.HistoricalDataApi()
 company_api = intrinio_sdk.CompanyApi()
-
-
+load = False
 
 
 def default(o):
@@ -41,9 +49,9 @@ def default(o):
 
 
 
-
 def index(request):
 	default_chart = {}
+
 	return render(request, "index.html", {"stock_codes": identifier_group})
 
 
@@ -65,6 +73,31 @@ def save_all_pages(stock_name, page_key, insert_list):
 			return save_all_pages(stock_name, api_response.next_page, insert_list)
 	except ApiException as e:
 		raise
+
+
+
+def pdf_generater(request):
+	buffer = io.BytesIO()
+	canvas_obj = SimpleDocTemplate(buffer)
+	stock_list = Stock.objects.all()
+	flow_obj = []
+	ttable = []
+	for item in stock_list:
+		trow = []
+		trow.append(item.code_name)
+		trow.append('$' + str(item.price))
+		trow.append(str(item.date))
+		ttable.append(trow)
+	t = Table(ttable, colWidths=[50, 80, 50])
+	tstyle = TableStyle([
+		('GRID', (0, 0), (-1, -1), 1, colors.black),
+		('FONT', (0, 0), (-1, -1), 'Times-Italic', 6)
+	])
+	t.setStyle(tstyle)
+	flow_obj.append(t)
+	canvas_obj.build(flow_obj)
+	buffer.seek(0)
+	return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
 
 
 
@@ -90,6 +123,7 @@ def save_profits(request):
 					pass
 			Stock.objects.bulk_create(insert_list, ignore_conflicts=True)
 			data = 'finish'
+
 			return HttpResponse(data)
 
 
@@ -179,12 +213,14 @@ def get_max_profits(request):
 			start_date = request.POST['start_date']
 			end_date = request.POST['end_date']
 
-			range_data = Stock.objects.filter(date__range=[start_date, end_date], code_name=identifier)
-			list_range_data = list(range_data)
-			max_profit, max_index, min_index = calculate_max(list_range_data)
-			out_list = list_range_data[min_index : max_index+1]
-			data = draw_line_chart(identifier, out_list, max_profit)
+			if identifier:
+				range_data = Stock.objects.filter(date__range=[start_date, end_date], code_name=identifier)
+				list_range_data = list(range_data)
 
-			return HttpResponse(data)
+				max_profit, max_index, min_index = calculate_max(list_range_data)
+				out_list = list_range_data[min_index : max_index+1]
+				data = draw_line_chart(identifier, out_list, max_profit)
+
+				return HttpResponse(data)
 
 
